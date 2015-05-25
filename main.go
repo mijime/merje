@@ -4,15 +4,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
+	"github.com/BurntSushi/toml"
+	"gopkg.in/yaml.v2"
 	"io"
+	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 	"text/template"
 )
 
-var format = flag.String("f", "", "output format")
-var output = flag.String("o", "", "output path")
+var format = flag.String("format", "{{json .}}", "output format")
+var output = flag.String("output", "", "output path")
 
 func main() {
 	flag.Parse()
@@ -25,21 +28,45 @@ func main() {
 		dec.Decode(&result)
 	} else {
 		for _, input := range inputs {
-			var reader io.Reader
+			var b []byte
+			var decoder string
+
 			if isFilePath(input) {
 				var err error
-				reader, err = os.Open(input)
+				b, err = ioutil.ReadFile(input)
 
 				if err != nil {
 					panic(err)
 				}
+				switch path.Ext(input) {
+				case ".yml", ".yaml":
+					decoder = "yaml"
+				case ".tml", ".toml":
+					decoder = "toml"
+				default:
+					decoder = "json"
+				}
 			} else {
-				reader = bytes.NewBufferString(input)
+				b = []byte(input)
 			}
 
-			dec := json.NewDecoder(reader)
-			dec.Decode(&dataBuf)
-
+			switch decoder {
+			case "yaml":
+				err := yaml.Unmarshal(b, &dataBuf)
+				if err != nil {
+					panic(err)
+				}
+			case "toml":
+				err := toml.Unmarshal(b, &dataBuf)
+				if err != nil {
+					panic(err)
+				}
+			default:
+				err := json.Unmarshal(b, &dataBuf)
+				if err != nil {
+					panic(err)
+				}
+			}
 			result = mergeInterface(result, dataBuf)
 		}
 	}
@@ -56,20 +83,20 @@ func main() {
 		}
 	}
 
-	if *format == "" {
-		enc := json.NewEncoder(writer)
-		enc.Encode(result)
+	tmpl, err := buildTemplate(*format)
+	if err != nil {
+		panic(err)
+
 	} else {
-		tmpl, err := buildTemplate(*format)
-		if err != nil {
-			panic(err)
-		} else {
-			tmpl.Execute(writer, result)
-		}
+		tmpl.Execute(writer, result)
 	}
 }
 
 func mergeInterface(prev, curr interface{}) interface{} {
+	if prev == nil {
+		return curr
+	}
+
 	switch prev.(type) {
 	case map[string]interface{}:
 		if curr == nil {
@@ -101,6 +128,38 @@ func mergeHash(prev, curr map[string]interface{}) map[string]interface{} {
 	return prev
 }
 
+func jsonDecode(v interface{}) string {
+	buf, err := json.Marshal(v)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return string(buf)
+}
+
+func yamlDecode(v interface{}) string {
+	buf, err := yaml.Marshal(v)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return string(buf)
+}
+
+func tomlDecode(v interface{}) string {
+	buf := new(bytes.Buffer)
+	enc := toml.NewEncoder(buf)
+	err := enc.Encode(v)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return buf.String()
+}
+
 func buildTemplate(format string) (*template.Template, error) {
 	funcMap := template.FuncMap{
 		"split":   strings.Split,
@@ -108,6 +167,9 @@ func buildTemplate(format string) (*template.Template, error) {
 		"replace": strings.Replace,
 		"base":    path.Base,
 		"dir":     path.Dir,
+		"json":    jsonDecode,
+		"yaml":    yamlDecode,
+		"toml":    tomlDecode,
 	}
 
 	if _, err := os.Stat(format); err != nil {
