@@ -14,6 +14,7 @@ import (
 	"text/template"
 )
 
+var decode = flag.String("decode", "json", "input format")
 var format = flag.String("format", "{{json .}}", "output format")
 var output = flag.String("output", "", "output path")
 
@@ -21,11 +22,17 @@ func main() {
 	flag.Parse()
 	inputs := flag.Args()
 
-	var result, dataBuf interface{}
+	var result interface{}
 
 	if len(inputs) <= 0 {
-		dec := json.NewDecoder(os.Stdin)
-		dec.Decode(&result)
+		b, err := ioutil.ReadAll(os.Stdin)
+
+		if err != nil {
+			panic(err)
+		}
+
+		result = typeDecode(b, *decode)
+
 	} else {
 		for _, input := range inputs {
 			var b []byte
@@ -43,30 +50,17 @@ func main() {
 					decoder = "yaml"
 				case ".tml", ".toml":
 					decoder = "toml"
-				default:
+				case ".json":
 					decoder = "json"
+				default:
+					decoder = *decode
 				}
 			} else {
 				b = []byte(input)
+				decoder = *decode
 			}
 
-			switch decoder {
-			case "yaml":
-				err := yaml.Unmarshal(b, &dataBuf)
-				if err != nil {
-					panic(err)
-				}
-			case "toml":
-				err := toml.Unmarshal(b, &dataBuf)
-				if err != nil {
-					panic(err)
-				}
-			default:
-				err := json.Unmarshal(b, &dataBuf)
-				if err != nil {
-					panic(err)
-				}
-			}
+			dataBuf := typeDecode(b, decoder)
 			result = mergeInterface(result, dataBuf)
 		}
 	}
@@ -128,7 +122,31 @@ func mergeHash(prev, curr map[string]interface{}) map[string]interface{} {
 	return prev
 }
 
-func jsonDecode(v interface{}) string {
+func typeDecode(b []byte, decoder string) interface{} {
+	var dataBuf interface{}
+
+	switch decoder {
+	case "yaml":
+		err := yaml.Unmarshal(b, &dataBuf)
+		if err != nil {
+			panic(err)
+		}
+	case "toml":
+		err := toml.Unmarshal(b, &dataBuf)
+		if err != nil {
+			panic(err)
+		}
+	default:
+		err := json.Unmarshal(b, &dataBuf)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return dataBuf
+}
+
+func jsonEncode(v interface{}) string {
 	buf, err := json.Marshal(v)
 
 	if err != nil {
@@ -138,7 +156,7 @@ func jsonDecode(v interface{}) string {
 	return string(buf)
 }
 
-func yamlDecode(v interface{}) string {
+func yamlEncode(v interface{}) string {
 	buf, err := yaml.Marshal(v)
 
 	if err != nil {
@@ -148,7 +166,7 @@ func yamlDecode(v interface{}) string {
 	return string(buf)
 }
 
-func tomlDecode(v interface{}) string {
+func tomlEncode(v interface{}) string {
 	buf := new(bytes.Buffer)
 	enc := toml.NewEncoder(buf)
 	err := enc.Encode(v)
@@ -167,9 +185,9 @@ func buildTemplate(format string) (*template.Template, error) {
 		"replace": strings.Replace,
 		"base":    path.Base,
 		"dir":     path.Dir,
-		"json":    jsonDecode,
-		"yaml":    yamlDecode,
-		"toml":    tomlDecode,
+		"json":    jsonEncode,
+		"yaml":    yamlEncode,
+		"toml":    tomlEncode,
 	}
 
 	if _, err := os.Stat(format); err != nil {
