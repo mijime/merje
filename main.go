@@ -107,9 +107,11 @@ func main() {
 	tmpl, err := buildTemplate(outputFormat)
 	if err != nil {
 		panic(err)
+	}
 
-	} else {
-		tmpl.Execute(writer, result)
+	err = tmpl.Execute(writer, result)
+	if err != nil {
+		panic(err)
 	}
 }
 
