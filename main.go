@@ -5,6 +5,7 @@ import (
 	"github.com/mijime/merje/remarshal"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"strings"
@@ -44,7 +45,7 @@ func main() {
 		inputBuffer, err := ioutil.ReadAll(os.Stdin)
 
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 
 		result, err = remarshal.Unmarshal(inputBuffer, inputFormat)
@@ -58,7 +59,7 @@ func main() {
 				inputBuffer, err = ioutil.ReadFile(input)
 
 				if err != nil {
-					panic(err)
+					log.Fatal(err)
 				}
 
 				switch path.Ext(input) {
@@ -95,7 +96,7 @@ func main() {
 		var err error
 		writer, err = os.Create(opts.OutputPath)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 	}
 
@@ -112,12 +113,12 @@ func main() {
 
 	tmpl, err := buildTemplate(outputFormat)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	err = tmpl.Execute(writer, result)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 
@@ -150,6 +151,7 @@ func mergeHash(prev, curr map[string]interface{}) map[string]interface{} {
 			prev[k] = mergeInterface(prev[k], curr[k])
 
 		default:
+			log.Println("[WARN] hash key conflict: " + k)
 			prev[k] = v
 		}
 	}
