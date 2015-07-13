@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flag"
+	"github.com/jessevdk/go-flags"
 	"github.com/mijime/merje/remarshal"
 	"io"
 	"io/ioutil"
@@ -11,19 +11,25 @@ import (
 	"text/template"
 )
 
-var inputFormatString = flag.String("if", "ext", "input format")
-var outputFormatString = flag.String("of", "json", "output format")
-var outputPath = flag.String("o", "", "output path")
+type Options struct {
+	InputFormat  string `short:"i" long:"input-format" default:"ext" description:"Input format < json | yaml | toml | ext >"`
+	OutputFormat string `short:"f" long:"output-format" default:"json" description:"Output format < json | yaml | toml | template path >"`
+	OutputPath   string `short:"o" long:"output" description:"Output path"`
+}
+
+var opts Options
 
 func main() {
-	flag.Parse()
-	inputs := flag.Args()
+	inputs, err := flags.Parse(&opts)
+	if err != nil {
+		os.Exit(2)
+	}
 
 	var result interface{}
 	var inputFormat remarshal.Format
 	var inputBuffer []byte
 
-	switch *inputFormatString {
+	switch opts.InputFormat {
 	case "yaml":
 		inputFormat = remarshal.YAML
 	case "toml":
@@ -83,17 +89,17 @@ func main() {
 	var writer io.Writer
 	var outputFormat string
 
-	if *outputPath == "" {
+	if opts.OutputPath == "" {
 		writer = os.Stdout
 	} else {
 		var err error
-		writer, err = os.Create(*outputPath)
+		writer, err = os.Create(opts.OutputPath)
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	switch *outputFormatString {
+	switch opts.OutputFormat {
 	case "yaml":
 		outputFormat = "{{yaml .}}"
 	case "toml":
@@ -101,7 +107,7 @@ func main() {
 	case "json":
 		outputFormat = "{{json .}}"
 	default:
-		outputFormat = *outputFormatString
+		outputFormat = opts.OutputFormat
 	}
 
 	tmpl, err := buildTemplate(outputFormat)
@@ -134,14 +140,14 @@ func mergeInterface(prev, curr interface{}) interface{} {
 
 func mergeHash(prev, curr map[string]interface{}) map[string]interface{} {
 	for k, v := range curr {
+		if prev[k] == nil {
+			prev[k] = v
+			continue
+		}
+
 		switch v.(type) {
 		case map[string]interface{}:
-			if prev[k] == nil {
-				prev[k] = v
-
-			} else {
-				prev[k] = mergeInterface(prev[k], curr[k])
-			}
+			prev[k] = mergeInterface(prev[k], curr[k])
 
 		default:
 			prev[k] = v
