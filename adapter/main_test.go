@@ -6,8 +6,8 @@ import (
 
 type TestAdapter struct{}
 
-func (this *TestAdapter) Match(option interface{}) bool {
-	return true
+func (this *TestAdapter) Lookup(option interface{}) interface{} {
+	return this
 }
 func (this *TestAdapter) UseFunc() bool {
 	return true

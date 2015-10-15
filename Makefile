@@ -6,7 +6,7 @@ format:
 	gofmt -d -s -w -e $(GO_FILES)
 
 test: format
-	go test
+	go test ./...
 
 install: test
 	go get -v
