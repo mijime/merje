@@ -12,25 +12,25 @@ type Converter interface {
 	Marshal(data interface{}) ([]byte, error)
 }
 
-type Option struct {
+type Options struct {
 	FileName, Format string
 }
 
-func Lookup(option Option) (Converter, error) {
-	adapter, err := Factory.Lookup(option)
+func Lookup(options Options) (Converter, error) {
+	adapter, err := Factory.Lookup(options)
 
 	if err != nil {
 		return nil, err
 	}
 
 	if adapter == nil {
-		return nil, nil
+		return nil, errors.New("Not support. FileName: " + options.FileName + " Format: " + options.Format)
 	}
 
 	converter, ok := adapter.(Converter)
 
 	if !ok {
-		return nil, errors.New("Can't convert error: FileName: " + option.FileName + " Format: " + option.Format)
+		return nil, errors.New("Fail cast converter. FileName: " + options.FileName + " Format: " + options.Format)
 	}
 
 	return converter, nil

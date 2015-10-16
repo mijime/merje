@@ -10,7 +10,7 @@ import (
 func TestRun_versionFlag(t *testing.T) {
 	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
 	cli := &CLI{outStream: outStream, errStream: errStream}
-	args := strings.Split("./merje -version", " ")
+	args := strings.Split("./merje --version", " ")
 
 	status := cli.Run(args)
 	if status != ExitCodeOK {
@@ -26,7 +26,7 @@ func TestRun_versionFlag(t *testing.T) {
 func TestRun_parseJSON(t *testing.T) {
 	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
 	cli := &CLI{outStream: outStream, errStream: errStream}
-	args := strings.Split("./merje -f json examples/input-1.json", " ")
+	args := strings.Split("./merje --format json examples/input-1.json", " ")
 
 	status := cli.Run(args)
 	if status != ExitCodeOK {
@@ -37,7 +37,7 @@ func TestRun_parseJSON(t *testing.T) {
 func TestRun_parseYAML(t *testing.T) {
 	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
 	cli := &CLI{outStream: outStream, errStream: errStream}
-	args := strings.Split("./merje -f yaml examples/input-2.yml", " ")
+	args := strings.Split("./merje --format yaml examples/input-2.yml", " ")
 
 	status := cli.Run(args)
 	if status != ExitCodeOK {
@@ -48,7 +48,7 @@ func TestRun_parseYAML(t *testing.T) {
 func TestRun_parseToml(t *testing.T) {
 	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
 	cli := &CLI{outStream: outStream, errStream: errStream}
-	args := strings.Split("./merje -f toml examples/input-3.toml", " ")
+	args := strings.Split("./merje --format toml examples/input-3.toml", " ")
 
 	status := cli.Run(args)
 	if status != ExitCodeOK {
@@ -59,7 +59,7 @@ func TestRun_parseToml(t *testing.T) {
 func TestRun_writeTmpl(t *testing.T) {
 	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
 	cli := &CLI{outStream: outStream, errStream: errStream}
-	args := strings.Split("./merje -f examples/format.tmpl examples/input-2.yml", " ")
+	args := strings.Split("./merje --format examples/format.tmpl examples/input-2.yml", " ")
 
 	status := cli.Run(args)
 	if status != ExitCodeOK {

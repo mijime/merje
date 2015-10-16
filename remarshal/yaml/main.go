@@ -12,30 +12,30 @@ func init() {
 	remarshal.Factory.Regist("yaml", New())
 }
 
-func New() *converter {
-	return &converter{}
+func New() converter {
+	return converter{}
 }
 
-func (this *converter) Lookup(option interface{}) interface{} {
-	roption, ok := option.(remarshal.Option)
+func (this converter) Lookup(options interface{}) interface{} {
+	op, ok := options.(remarshal.Options)
 
 	if !ok {
 		return nil
 	}
 
-	if filepath.Ext(roption.FileName) == ".yaml" ||
-		filepath.Ext(roption.FileName) == ".yml" {
+	if filepath.Ext(op.FileName) == ".yaml" ||
+		filepath.Ext(op.FileName) == ".yml" {
 		return this
 	}
 
-	if roption.Format == "yaml" {
+	if op.Format == "yaml" {
 		return this
 	}
 
 	return nil
 }
 
-func (this *converter) Unmarshal(buf []byte) (data interface{}, err error) {
+func (this converter) Unmarshal(buf []byte) (data interface{}, err error) {
 	err = yaml.Unmarshal(buf, &data)
 
 	if err != nil {
@@ -45,6 +45,6 @@ func (this *converter) Unmarshal(buf []byte) (data interface{}, err error) {
 	return remarshal.ConvertMapsToStringMaps(data)
 }
 
-func (this *converter) Marshal(data interface{}) (output []byte, err error) {
+func (this converter) Marshal(data interface{}) (output []byte, err error) {
 	return yaml.Marshal(&data)
 }

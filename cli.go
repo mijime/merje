@@ -1,8 +1,9 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"github.com/jessevdk/go-flags"
+	"github.com/mijime/merje/merge"
 	"github.com/mijime/merje/remarshal"
 	"io"
 	"io/ioutil"
@@ -16,6 +17,13 @@ const (
 	ExitCodeError int = 1 + iota
 )
 
+type Options struct {
+	Format  string `short:"f" long:"format" description:"input/output format" default:"json"`
+	Output  string `short:"o" long:"out" description:"output path"`
+	Type    string `short:"t" long:"type" description:"merge type" default:"sum"`
+	Version bool   `short:"v" long:"version" description:"print a version"`
+}
+
 // CLI is the command line object
 type CLI struct {
 	// outStream and errStream are the stdout and stderr
@@ -25,52 +33,43 @@ type CLI struct {
 
 // Run invokes the CLI with the given arguments.
 func (this *CLI) Run(args []string) int {
-	var (
-		format  string
-		out     string
-		version bool
-	)
+	var options Options
 
 	// Define option flag parse
-	flags := flag.NewFlagSet(Name, flag.ContinueOnError)
-	flags.SetOutput(this.errStream)
+	targets, err := flags.ParseArgs(&options, args)
 
-	flags.StringVar(&format, "format", "json", "format")
-	flags.StringVar(&format, "f", "json", "format")
-	flags.StringVar(&out, "out", "", "output file path")
-	flags.StringVar(&out, "o", "", "output file path")
-
-	flags.BoolVar(&version, "version", false, "Print version information and quit.")
-
-	// Parse commandline flag
-	if err := flags.Parse(args[1:]); err != nil {
+	if err != nil {
 		return ExitCodeError
 	}
 
 	// Show version
-	if version {
+	if options.Version {
 		fmt.Fprintf(this.errStream, "%s version %s\n", Name, Version)
 		return ExitCodeOK
 	}
 
-	err := this.execute(format, out, flags.Args())
-
-	if err != nil {
-		log.Print(err)
+	if e := this.execute(options, targets[1:]); e != nil {
+		log.Print(e)
 		return ExitCodeError
 	}
 
 	return ExitCodeOK
 }
 
-func (this *CLI) execute(format string, out string, targets []string) (err error) {
+func (this *CLI) execute(options Options, targets []string) (err error) {
 	var (
 		data, result interface{}
 		iBuf, oBuf   []byte
 		conv         remarshal.Converter
 		writer       io.Writer
-		option       remarshal.Option
+		rOptions     remarshal.Options
 	)
+
+	operator, err := merge.Lookup(merge.Options{options.Type})
+
+	if err != nil {
+		return err
+	}
 
 	// Input
 	for _, target := range targets {
@@ -85,8 +84,8 @@ func (this *CLI) execute(format string, out string, targets []string) (err error
 		}
 
 		// Find FileName
-		option = remarshal.Option{FileName: target}
-		conv, err = remarshal.Lookup(option)
+		rOptions = remarshal.Options{FileName: target}
+		conv, err = remarshal.Lookup(rOptions)
 
 		if err != nil {
 			return err
@@ -94,8 +93,8 @@ func (this *CLI) execute(format string, out string, targets []string) (err error
 
 		if conv == nil {
 			// Find Format
-			option = remarshal.Option{target, option.Format}
-			conv, err = remarshal.Lookup(option)
+			rOptions = remarshal.Options{target, rOptions.Format}
+			conv, err = remarshal.Lookup(rOptions)
 
 			if err != nil {
 				return err
@@ -108,11 +107,11 @@ func (this *CLI) execute(format string, out string, targets []string) (err error
 			return err
 		}
 
-		result = remarshal.Merge(result, data)
+		result = operator.Merge(result, data)
 	}
 
-	option = remarshal.Option{out, format}
-	conv, err = remarshal.Lookup(option)
+	rOptions = remarshal.Options{options.Output, options.Format}
+	conv, err = remarshal.Lookup(rOptions)
 
 	if err != nil {
 		return err
@@ -124,10 +123,10 @@ func (this *CLI) execute(format string, out string, targets []string) (err error
 		return err
 	}
 
-	if out == "" {
+	if options.Output == "" {
 		writer = this.outStream
 	} else {
-		writer, err = os.Create(out)
+		writer, err = os.Create(options.Output)
 	}
 
 	_, err = writer.Write(oBuf)

@@ -15,27 +15,27 @@ type converter struct {
 }
 
 func init() {
-	remarshal.Factory.Regist("template", &factory{})
+	remarshal.Factory.Regist("template", factory{})
 }
 
-func New(option remarshal.Option) *converter {
-	return &converter{option.Format}
+func New(options remarshal.Options) *converter {
+	return &converter{options.Format}
 }
 
-func (this *factory) Lookup(option interface{}) interface{} {
-	roption, ok := option.(remarshal.Option)
+func (this factory) Lookup(options interface{}) interface{} {
+	op, ok := options.(remarshal.Options)
 
 	if !ok {
 		return nil
 	}
 
-	_, err := os.Stat(roption.Format)
+	_, err := os.Stat(op.Format)
 
 	if err != nil {
 		return nil
 	}
 
-	return New(roption)
+	return New(op)
 }
 
 func (this *converter) Unmarshal(buf []byte) (data interface{}, err error) {

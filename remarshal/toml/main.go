@@ -13,12 +13,12 @@ func init() {
 	remarshal.Factory.Regist("toml", New())
 }
 
-func New() *converter {
-	return &converter{}
+func New() converter {
+	return converter{}
 }
 
-func (this *converter) Lookup(option interface{}) interface{} {
-	op, ok := option.(remarshal.Option)
+func (this converter) Lookup(options interface{}) interface{} {
+	op, ok := options.(remarshal.Options)
 
 	if !ok {
 		return nil
@@ -35,7 +35,7 @@ func (this *converter) Lookup(option interface{}) interface{} {
 	return nil
 }
 
-func (this *converter) Unmarshal(buf []byte) (data interface{}, err error) {
+func (this converter) Unmarshal(buf []byte) (data interface{}, err error) {
 	_, err = toml.Decode(string(buf), &data)
 
 	if err != nil {
@@ -45,7 +45,7 @@ func (this *converter) Unmarshal(buf []byte) (data interface{}, err error) {
 	return data, err
 }
 
-func (this *converter) Marshal(data interface{}) (output []byte, err error) {
+func (this converter) Marshal(data interface{}) (output []byte, err error) {
 	buf := new(bytes.Buffer)
 	err = toml.NewEncoder(buf).Encode(data)
 	if err != nil {
