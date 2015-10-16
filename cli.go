@@ -21,7 +21,7 @@ type Options struct {
 	InputFormat string `short:"i" long:"input-format" description:"input format"`
 	Format      string `short:"f" long:"format" description:"input format"`
 	Output      string `short:"o" long:"out" description:"output path"`
-	Type        string `short:"t" long:"type" description:"merge type" default:"sum"`
+	MergeType   string `short:"t" long:"type" description:"merge type" default:"sum"`
 	Version     bool   `short:"v" long:"version" description:"print a version"`
 }
 
@@ -49,6 +49,11 @@ func (this *CLI) Run(args []string) int {
 		return ExitCodeOK
 	}
 
+	if options.Format == "" && options.Output == "" {
+		log.Print("Need flags. -f or -o")
+		return ExitCodeError
+	}
+
 	if e := this.execute(options, targets[1:]); e != nil {
 		log.Print(e)
 		return ExitCodeError
@@ -66,7 +71,7 @@ func (this *CLI) execute(options Options, targets []string) (err error) {
 		rOptions     remarshal.Options
 	)
 
-	operator, err := merge.Lookup(merge.Options{options.Type})
+	operator, err := merge.Lookup(merge.Options{options.MergeType})
 
 	if err != nil {
 		return err

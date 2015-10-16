@@ -24,7 +24,7 @@ func Lookup(options Options) (Converter, error) {
 	}
 
 	if adapter == nil {
-		return nil, errors.New("Not support. FileName: " + options.FileName + " Format: " + options.Format)
+		return nil, errors.New("Not support. FileName: " + options.FileName + ", Format: " + options.Format)
 	}
 
 	converter, ok := adapter.(Converter)
