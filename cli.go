@@ -85,15 +85,11 @@ func (this *CLI) execute(options Options, targets []string) (err error) {
 
 		// Find FileName
 		rOptions = remarshal.Options{FileName: target}
-		conv, err = remarshal.Lookup(rOptions)
-
-		if err != nil {
-			return err
-		}
+		conv, _ = remarshal.Lookup(rOptions)
 
 		if conv == nil {
 			// Find Format
-			rOptions = remarshal.Options{target, rOptions.Format}
+			rOptions = remarshal.Options{Format: options.Format}
 			conv, err = remarshal.Lookup(rOptions)
 
 			if err != nil {
@@ -110,11 +106,22 @@ func (this *CLI) execute(options Options, targets []string) (err error) {
 		result = operator.Merge(result, data)
 	}
 
-	rOptions = remarshal.Options{options.Output, options.Format}
-	conv, err = remarshal.Lookup(rOptions)
+	// Find File
+	rOptions = remarshal.Options{FileName: options.Output}
+	conv, _ = remarshal.Lookup(rOptions)
 
 	if err != nil {
 		return err
+	}
+
+	if conv == nil {
+		// Find Format
+		rOptions = remarshal.Options{Format: options.Format}
+		conv, err = remarshal.Lookup(rOptions)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	oBuf, err = conv.Marshal(result)
