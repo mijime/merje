@@ -49,12 +49,12 @@ func (this *CLI) Run(args []string) int {
 	}
 
 	if options.Format == "" && options.Output == "" {
-		fmt.Fprint(this.errStream, "Need flags. -f or -o")
+		fmt.Fprint(this.errStream, "[Error] Need flags. -f or -o")
 		return ExitCodeError
 	}
 
 	if e := this.execute(options, targets[1:]); e != nil {
-		fmt.Fprint(this.errStream, e)
+		fmt.Fprintf(this.errStream, "[Error] %s", e)
 		return ExitCodeError
 	}
 
