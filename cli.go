@@ -18,10 +18,11 @@ const (
 )
 
 type Options struct {
-	Format  string `short:"f" long:"format" description:"input/output format" default:"json"`
-	Output  string `short:"o" long:"out" description:"output path"`
-	Type    string `short:"t" long:"type" description:"merge type" default:"sum"`
-	Version bool   `short:"v" long:"version" description:"print a version"`
+	InputFormat string `short:"i" long:"input-format" description:"input format"`
+	Format      string `short:"f" long:"format" description:"input format"`
+	Output      string `short:"o" long:"out" description:"output path"`
+	Type        string `short:"t" long:"type" description:"merge type" default:"sum"`
+	Version     bool   `short:"v" long:"version" description:"print a version"`
 }
 
 // CLI is the command line object
@@ -73,7 +74,13 @@ func (this *CLI) execute(options Options, targets []string) (err error) {
 
 	// Input
 	for _, target := range targets {
-		if isFileExists(target) {
+		if target == "-" {
+			iBuf, err = ioutil.ReadAll(os.Stdin)
+
+			if err != nil {
+				return err
+			}
+		} else if isFileExists(target) {
 			iBuf, err = ioutil.ReadFile(target)
 
 			if err != nil {
@@ -89,7 +96,7 @@ func (this *CLI) execute(options Options, targets []string) (err error) {
 
 		if conv == nil {
 			// Find Format
-			rOptions = remarshal.Options{Format: options.Format}
+			rOptions = remarshal.Options{Format: options.InputFormat}
 			conv, err = remarshal.Lookup(rOptions)
 
 			if err != nil {
@@ -107,21 +114,11 @@ func (this *CLI) execute(options Options, targets []string) (err error) {
 	}
 
 	// Find File
-	rOptions = remarshal.Options{FileName: options.Output}
-	conv, _ = remarshal.Lookup(rOptions)
+	rOptions = remarshal.Options{FileName: options.Output, Format: options.Format}
+	conv, err = remarshal.Lookup(rOptions)
 
 	if err != nil {
 		return err
-	}
-
-	if conv == nil {
-		// Find Format
-		rOptions = remarshal.Options{Format: options.Format}
-		conv, err = remarshal.Lookup(rOptions)
-
-		if err != nil {
-			return err
-		}
 	}
 
 	oBuf, err = conv.Marshal(result)
