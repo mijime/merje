@@ -19,7 +19,7 @@ const (
 
 type Options struct {
 	InputFormat string `short:"i" long:"input-format" description:"input format"`
-	Format      string `short:"f" long:"format" description:"input format"`
+	Format      string `short:"f" long:"format" description:"output format"`
 	Output      string `short:"o" long:"out" description:"output path"`
 	MergeType   string `short:"t" long:"type" description:"merge type" default:"sum"`
 	Version     bool   `short:"v" long:"version" description:"print a version"`
