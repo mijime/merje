@@ -30,7 +30,7 @@ test: format
 	go tool vet -v .
 	go test -cover ./...
 
-install: test
+install:
 	go get -v ./...
 
 release: ghr tarball
