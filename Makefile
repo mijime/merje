@@ -27,6 +27,7 @@ format: $(GO_FILES)
 	gofmt -d -s -w -e $(GO_FILES)
 
 test: format
+	go tool vet -v .
 	go test ./...
 
 install: test

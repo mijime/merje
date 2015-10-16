@@ -70,7 +70,7 @@ func (this *CLI) execute(options Options, targets []string) (err error) {
 		rOptions     remarshal.Options
 	)
 
-	operator, err := merge.Lookup(merge.Options{options.MergeType})
+	operator, err := merge.Lookup(merge.Options{Type: options.MergeType})
 
 	if err != nil {
 		return err
