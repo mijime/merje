@@ -1,5 +1,5 @@
 NAME = merje
-VERSION = 0.1.1
+VERSION = 0.1.2
 
 GO_FILES = $(shell find -name "*.go" -type f)
 GO_TEST_FILES = $(shell find -name "*_test.go" -type f)
