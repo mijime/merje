@@ -3,10 +3,13 @@ VERSION = 0.1.1
 
 GO_FILES = $(shell find -name "*.go" -type f)
 GO_TEST_FILES = $(shell find -name "*_test.go" -type f)
-BUILD_DIRS = \
-	pkg/dist/$(VERSION)/windows_amd64.tar.gz \
-	pkg/dist/$(VERSION)/darwin_amd64.tar.gz \
-	pkg/dist/$(VERSION)/linux_amd64.tar.gz
+
+BUILD_DIR = pkg/$(VERSION)
+DIST_DIR = pkg/dist/$(VERSION)
+DIST_TARS = \
+	$(DIST_DIR)/windows_amd64.tar.gz \
+	$(DIST_DIR)/darwin_amd64.tar.gz \
+	$(DIST_DIR)/linux_amd64.tar.gz
 
 # XC_ARCH = 386 amd64
 XC_ARCH = amd64
@@ -30,20 +33,20 @@ install: test
 	go get -v ./...
 
 release: ghr tarball
-	ghr $(VERSION) pkg/dist/$(VERSION)
+	ghr $(VERSION) $(DIST_DIR)
 
-tarball: $(BUILD_DIRS)
+tarball: $(DIST_TARS)
 
-pkg/dist/$(VERSION)/%.tar.gz:
-	mkdir -p pkg/dist/$(VERSION)
-	tar cvfz $@ pkg/$(VERSION)/$(*)
+$(DIST_DIR)/%.tar.gz:
+	mkdir -p $(DIST_DIR)
+	tar cvfz $@ $(BUILD_DIR)/$(*)
 
 build: gox format test
 	gox \
 		-ldflags="-X main.GitCommit \"$$(git describe --always)\"" \
 		-os="$(XC_OS)" \
 		-arch="$(XC_ARCH)" \
-		-output="pkg/$(VERSION)/{{.OS}}_{{.Arch}}/{{.Dir}}" \
+		-output="$(BUILD_DIR)/{{.OS}}_{{.Arch}}/{{.Dir}}" \
 		./...
 
 ghr:
