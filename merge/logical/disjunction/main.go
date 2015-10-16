@@ -17,7 +17,7 @@ func (this operator) Lookup(options interface{}) interface{} {
 		return nil
 	}
 
-	if op.Type == "sum" || op.Type == "dis" {
+	if op.Type == "or" || op.Type == "dis" {
 		return this
 	}
 

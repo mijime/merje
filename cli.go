@@ -7,7 +7,6 @@ import (
 	"github.com/mijime/merje/remarshal"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
@@ -21,7 +20,7 @@ type Options struct {
 	InputFormat string `short:"i" long:"input-format" description:"input format"`
 	Format      string `short:"f" long:"format" description:"output format"`
 	Output      string `short:"o" long:"out" description:"output path"`
-	MergeType   string `short:"t" long:"type" description:"merge type" default:"sum"`
+	MergeType   string `short:"t" long:"type" description:"merge type" default:"or"`
 	Version     bool   `short:"v" long:"version" description:"print a version"`
 }
 
@@ -50,12 +49,12 @@ func (this *CLI) Run(args []string) int {
 	}
 
 	if options.Format == "" && options.Output == "" {
-		log.Print("Need flags. -f or -o")
+		fmt.Fprint(this.errStream, "Need flags. -f or -o")
 		return ExitCodeError
 	}
 
 	if e := this.execute(options, targets[1:]); e != nil {
-		log.Print(e)
+		fmt.Fprint(this.errStream, e)
 		return ExitCodeError
 	}
 

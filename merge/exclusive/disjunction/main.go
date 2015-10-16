@@ -17,7 +17,7 @@ func (this operator) Lookup(options interface{}) interface{} {
 		return nil
 	}
 
-	if op.Type == "diff" || op.Type == "x-dis" {
+	if op.Type == "xor" || op.Type == "ex-dis" {
 		return this
 	}
 
