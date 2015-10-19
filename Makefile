@@ -1,8 +1,8 @@
 NAME = merje
 VERSION = 0.1.3
 
-GO_FILES = $(shell find -name "*.go" -type f)
-GO_TEST_FILES = $(shell find -name "*_test.go" -type f)
+GO_FILES = $(shell find . -name "*.go" -type f)
+GO_TEST_FILES = $(shell find . -name "*_test.go" -type f)
 
 BUILD_DIR = pkg/$(VERSION)
 DIST_DIR = pkg/dist/$(VERSION)
