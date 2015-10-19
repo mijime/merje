@@ -1,15 +1,15 @@
 test4:
   test5:
-  - 1
-  - 2
-  - 3
-  - 4
-  test6: 1
-  test7: hello world
+  - 9
+  - 10
+  - 11
+  - 12
+  test6: 3
+  test7: hello world from input-2.yml
 test5:
-- 1
-- 2
-- 3
-- 4
-test6: 1
-test7: hello world
+- 13
+- 14
+- 15
+- 16
+test6: 4
+test7: hello world from input-2.yml

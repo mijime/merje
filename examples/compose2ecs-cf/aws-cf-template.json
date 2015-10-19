@@ -1,0 +1,67 @@
+{
+  "Parameters": {
+    "DesiredCount": {
+      "Default": 1,
+      "Type": "Number"
+    }
+  },
+  "Resources": {
+    "Cluster": {
+      "Type": "AWS::ECS::Cluster"
+    },
+    "Service": {
+      "Properties": {
+        "Cluster": {
+          "Ref": "Cluster"
+        },
+        "DesiredCount": {
+          "Ref": "DesiredCount"
+        },
+        "TaskDefinition": {
+          "Ref": "TaskDefinition"
+        }
+      },
+      "Type": "AWS::ECS::Service"
+    },
+    "TaskDefinition": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Cpu": "\u003cno value\u003e",
+            "Environment": [
+              {
+                "Name": "MYSQL_ROOT_PASSWORD",
+                "Value": "ex4mP1e"
+              }
+            ],
+            "Image": "percona",
+            "Memory": "\u003cno value\u003e",
+            "Name": "database"
+          },
+          {
+            "Cpu": "\u003cno value\u003e",
+            "Environment": [
+              {
+                "Name": "WORDPRESS_DB_PASSWORD",
+                "Value": "ex4mP1e"
+              }
+            ],
+            "Image": "wordpress",
+            "Links": [
+              "database:mysql"
+            ],
+            "Memory": "\u003cno value\u003e",
+            "Name": "web",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "HostPort": 80
+              }
+            ]
+          }
+        ]
+      },
+      "Type": "AWS::ECS::TaskDefinition"
+    }
+  }
+}

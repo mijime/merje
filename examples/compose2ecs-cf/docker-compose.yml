@@ -1,0 +1,13 @@
+web:
+  image: wordpress
+  ports:
+  - 80:80
+  links:
+  - database:mysql
+  environment:
+    WORDPRESS_DB_PASSWORD: ex4mP1e
+
+database:
+  image: percona
+  environment:
+    MYSQL_ROOT_PASSWORD: ex4mP1e

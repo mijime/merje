@@ -1,11 +1,33 @@
 # merje
 
-[![Build Status](https://drone.io/github.com/mijime/merje/status.png)](https://drone.io/github.com/mijime/merje/latest)
+Supports the merge hash from any config files.
 
+[![Build Status](https://drone.io/github.com/mijime/merje/status.png)](https://drone.io/github.com/mijime/merje/latest)
 
 ## Description
 
 ## Usage
+
+merje [OPTIONS] [SOURCE FILES ...]
+
+Application Options:
+  -i, --input-format:  input format
+  -f, --format:        output format
+  -o, --out:           output path
+  -t, --type:          merge type (default: or)
+  -v, --version        print a version
+
+Help Options:
+  -?                  Show this help message
+  -h, --help          Show this help message
+
+## Example
+
+Merge from [examples/input-1.json](examples/input-1.json) [examples/input-2.yml](examples/input-2.yml) to [examples/input-3.toml](examples/input-3.toml)
+
+```bash
+$ merje examples/input-1.json examples/input-2.yml --out examples/input-3.toml
+```
 
 ## Install
 
@@ -14,6 +36,8 @@ To install, use `go get`:
 ```bash
 $ go get -d github.com/mijime/merje
 ```
+
+or download: [https://github.com/mijime/merje/releases/latest](https://github.com/mijime/merje/releases/latest)
 
 ## Contribution
 

@@ -1,0 +1,39 @@
+---
+Parameters:
+  DesiredCount:
+    Type: Number
+    Default: 1
+
+Resources:
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster:
+        Ref: Cluster
+      DesiredCount:
+        Ref: DesiredCount
+      TaskDefinition:
+        Ref: TaskDefinition
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:{{range $k,$v:= .}}
+      - Name: {{$k}}
+        Image: {{$v.image}}
+        Cpu: {{$v.cpu}}
+        Memory: {{$v.memory}}
+        {{if $v.environment}}Environment:{{range $ek,$ev := $v.environment}}
+        - Name: {{$ek}}
+          Value: {{$ev}}{{end}}
+        {{end}}{{if $v.ports}}PortMappings:{{range $v.ports}}{{$pl := split . ":"}}
+        - ContainerPort: {{index $pl 0}}
+          HostPort: {{index $pl 1}}{{end}}
+        {{end}}{{if $v.links}}Links:{{range $v.links}}
+        - {{.}}{{end}}
+        {{end}}{{if $v.volumes}}MountPoints:{{range $v.volumes}}{{$vl := split . ":"}}
+        - SourceVolume: {{$k}}{{index $vl 0 | base}}Volume
+          ContainerPath: {{index $vl 1}}{{end}}
+      {{if $v.volumes}}Volumes:{{range $v.volumes}}{{$vl := split . ":"}}
+      - Name: {{$k}}{{index $vl 0 | base}}Volume
+        Host:
+          SourcePath: {{index $vl 0}}{{end}}{{end}}{{end}}{{end}}
