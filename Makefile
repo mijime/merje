@@ -27,7 +27,7 @@ all: $(GO_FILES)
 format: $(GO_FILES)
 	gofmt -d -s -w -e $(GO_FILES)
 
-lint:
+lint: golint
 	golint ./...
 
 vet:
