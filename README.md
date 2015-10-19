@@ -8,6 +8,7 @@ Supports the merge hash from any config files.
 
 ## Usage
 
+```
 merje [OPTIONS] [SOURCE FILES ...]
 
 Application Options:
@@ -20,6 +21,7 @@ Application Options:
 Help Options:
   -?                  Show this help message
   -h, --help          Show this help message
+```
 
 ## Example
 

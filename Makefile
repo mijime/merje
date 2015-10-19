@@ -40,7 +40,7 @@ install:
 	go get -v ./...
 
 release: ghr tarball
-	ghr $(VERSION) $(DIST_DIR)
+	ghr --replace $(VERSION) $(DIST_DIR)
 
 tarball: $(DIST_TARS)
 
