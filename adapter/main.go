@@ -4,22 +4,26 @@ import (
 	"sync"
 )
 
+// Adapter is
 type Adapter interface {
 	Lookup(option interface{}) interface{}
 }
 
-type AdapterFactory struct {
+// Factory is
+type Factory struct {
 	adapters map[string]Adapter
 	sync.Mutex
 }
 
-func New() *AdapterFactory {
+// New is
+func New() *Factory {
 	adapters := make(map[string]Adapter, 0)
-	return &AdapterFactory{adapters: adapters}
+	return &Factory{adapters: adapters}
 }
 
-func (this *AdapterFactory) Lookup(option interface{}) (interface{}, error) {
-	for _, adapter := range this.adapters {
+// Lookup is
+func (f *Factory) Lookup(option interface{}) (interface{}, error) {
+	for _, adapter := range f.adapters {
 		result := adapter.Lookup(option)
 
 		if result != nil {
@@ -30,16 +34,18 @@ func (this *AdapterFactory) Lookup(option interface{}) (interface{}, error) {
 	return nil, nil
 }
 
-func (this *AdapterFactory) Regist(name string, adapter Adapter) {
-	this.Lock()
-	defer this.Unlock()
+// Regist is
+func (f *Factory) Regist(name string, adapter Adapter) {
+	f.Lock()
+	defer f.Unlock()
 
-	this.adapters[name] = adapter
+	f.adapters[name] = adapter
 }
 
-func (this *AdapterFactory) Deregist(name string) {
-	this.Lock()
-	defer this.Unlock()
+// Deregist is
+func (f *Factory) Deregist(name string) {
+	f.Lock()
+	defer f.Unlock()
 
-	delete(this.adapters, name)
+	delete(f.adapters, name)
 }

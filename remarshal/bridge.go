@@ -5,17 +5,21 @@ import (
 	"github.com/mijime/merje/adapter"
 )
 
+// Factory is
 var Factory = adapter.New()
 
+// Converter is
 type Converter interface {
 	Unmarshal(input []byte) (interface{}, error)
 	Marshal(data interface{}) ([]byte, error)
 }
 
+// Options is
 type Options struct {
 	FileName, Format string
 }
 
+// Lookup is
 func Lookup(options Options) (Converter, error) {
 	adapter, err := Factory.Lookup(options)
 

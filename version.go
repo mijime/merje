@@ -1,4 +1,7 @@
 package main
 
+// Name is command name
 const Name string = "merje"
-const Version string = "0.1.2"
+
+// Version is command version
+const Version string = "0.1.3"

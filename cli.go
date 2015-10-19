@@ -16,6 +16,7 @@ const (
 	ExitCodeError int = 1 + iota
 )
 
+// Options is
 type Options struct {
 	InputFormat string `short:"i" long:"input-format" description:"input format"`
 	Format      string `short:"f" long:"format" description:"output format"`
@@ -32,7 +33,7 @@ type CLI struct {
 }
 
 // Run invokes the CLI with the given arguments.
-func (this *CLI) Run(args []string) int {
+func (cli *CLI) Run(args []string) int {
 	var options Options
 
 	// Define option flag parse
@@ -44,24 +45,24 @@ func (this *CLI) Run(args []string) int {
 
 	// Show version
 	if options.Version {
-		fmt.Fprintf(this.errStream, "%s version %s\n", Name, Version)
+		fmt.Fprintf(cli.errStream, "%s version %s\n", Name, Version)
 		return ExitCodeOK
 	}
 
 	if options.Format == "" && options.Output == "" {
-		fmt.Fprint(this.errStream, "[Error] Need flags. -f or -o")
+		fmt.Fprint(cli.errStream, "[Error] Need flags. -f or -o")
 		return ExitCodeError
 	}
 
-	if e := this.execute(options, targets[1:]); e != nil {
-		fmt.Fprintf(this.errStream, "[Error] %s", e)
+	if e := cli.execute(options, targets[1:]); e != nil {
+		fmt.Fprintf(cli.errStream, "[Error] %s", e)
 		return ExitCodeError
 	}
 
 	return ExitCodeOK
 }
 
-func (this *CLI) execute(options Options, targets []string) (err error) {
+func (cli *CLI) execute(options Options, targets []string) (err error) {
 	var (
 		data, result interface{}
 		iBuf, oBuf   []byte
@@ -132,7 +133,7 @@ func (this *CLI) execute(options Options, targets []string) (err error) {
 	}
 
 	if options.Output == "" {
-		writer = this.outStream
+		writer = cli.outStream
 	} else {
 		writer, err = os.Create(options.Output)
 	}

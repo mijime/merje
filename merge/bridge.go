@@ -5,16 +5,20 @@ import (
 	"github.com/mijime/merje/adapter"
 )
 
+// Factory is
 var Factory = adapter.New()
 
+// Operator is
 type Operator interface {
 	Merge(curr, next interface{}) interface{}
 }
 
+// Options is
 type Options struct {
 	Type string
 }
 
+// Lookup is
 func Lookup(options Options) (Operator, error) {
 	adapter, err := Factory.Lookup(options)
 

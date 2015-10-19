@@ -1,5 +1,5 @@
 NAME = merje
-VERSION = 0.1.2
+VERSION = 0.1.3
 
 GO_FILES = $(shell find -name "*.go" -type f)
 GO_TEST_FILES = $(shell find -name "*_test.go" -type f)
@@ -18,6 +18,7 @@ XC_OS = windows darwin linux
 all: $(GO_FILES)
 
 %.go:
+	golint $*.go
 	gofmt -d -s -w -e $*.go
 
 %_test.go:
@@ -26,8 +27,13 @@ all: $(GO_FILES)
 format: $(GO_FILES)
 	gofmt -d -s -w -e $(GO_FILES)
 
-test: format
+lint:
+	golint ./...
+
+vet:
 	go tool vet -v .
+
+test: format lint vet
 	go test -cover ./...
 
 install:
@@ -49,6 +55,9 @@ build: gox format test
 		-arch="$(XC_ARCH)" \
 		-output="$(BUILD_DIR)/{{.OS}}_{{.Arch}}/{{.Dir}}" \
 		./...
+
+golint:
+	go get -v github.com/golang/lint/golint
 
 ghr:
 	go get -v github.com/tcnksm/ghr

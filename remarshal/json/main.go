@@ -10,14 +10,10 @@ import (
 type converter struct{}
 
 func init() {
-	remarshal.Factory.Regist("json", New())
+	remarshal.Factory.Regist("json", converter{})
 }
 
-func New() converter {
-	return converter{}
-}
-
-func (this converter) Lookup(options interface{}) interface{} {
+func (c converter) Lookup(options interface{}) interface{} {
 	op, ok := options.(remarshal.Options)
 
 	if !ok {
@@ -25,17 +21,17 @@ func (this converter) Lookup(options interface{}) interface{} {
 	}
 
 	if filepath.Ext(op.FileName) == ".json" {
-		return this
+		return c
 	}
 
 	if op.Format == "json" {
-		return this
+		return c
 	}
 
 	return nil
 }
 
-func (this converter) Unmarshal(buf []byte) (data interface{}, err error) {
+func (c converter) Unmarshal(buf []byte) (data interface{}, err error) {
 	decoder := json.NewDecoder(bytes.NewReader(buf))
 	decoder.UseNumber()
 	err = decoder.Decode(&data)
@@ -47,7 +43,7 @@ func (this converter) Unmarshal(buf []byte) (data interface{}, err error) {
 	return remarshal.ConvertNumbersToInt64(data)
 }
 
-func (this converter) Marshal(data interface{}) (output []byte, err error) {
+func (c converter) Marshal(data interface{}) (output []byte, err error) {
 	output, err = json.Marshal(&data)
 
 	if err != nil {

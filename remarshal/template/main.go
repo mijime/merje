@@ -10,6 +10,7 @@ import (
 )
 
 type factory struct{}
+
 type converter struct {
 	templatePath string
 }
@@ -18,11 +19,11 @@ func init() {
 	remarshal.Factory.Regist("template", factory{})
 }
 
-func New(options remarshal.Options) *converter {
-	return &converter{options.Format}
+func new(options remarshal.Options) converter {
+	return converter{templatePath: options.Format}
 }
 
-func (this factory) Lookup(options interface{}) interface{} {
+func (f factory) Lookup(options interface{}) interface{} {
 	op, ok := options.(remarshal.Options)
 
 	if !ok {
@@ -35,20 +36,20 @@ func (this factory) Lookup(options interface{}) interface{} {
 		return nil
 	}
 
-	return New(op)
+	return new(op)
 }
 
-func (this *converter) Unmarshal(buf []byte) (data interface{}, err error) {
+func (c converter) Unmarshal(buf []byte) (data interface{}, err error) {
 	return nil, nil
 }
 
-func (this *converter) Marshal(data interface{}) (output []byte, err error) {
+func (c converter) Marshal(data interface{}) (output []byte, err error) {
 	var (
 		buf  bytes.Buffer
 		tmpl *template.Template
 	)
 
-	tmpl, err = buildTemplate(this.templatePath)
+	tmpl, err = buildTemplate(c.templatePath)
 	if err != nil {
 		return nil, err
 	}

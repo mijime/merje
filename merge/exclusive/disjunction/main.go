@@ -10,7 +10,7 @@ func init() {
 
 type operator struct{}
 
-func (this operator) Lookup(options interface{}) interface{} {
+func (o operator) Lookup(options interface{}) interface{} {
 	op, ok := options.(merge.Options)
 
 	if !ok {
@@ -18,17 +18,17 @@ func (this operator) Lookup(options interface{}) interface{} {
 	}
 
 	if op.Type == "xor" || op.Type == "ex-dis" {
-		return this
+		return o
 	}
 
 	return nil
 }
 
-func (this operator) Merge(curr, next interface{}) interface{} {
-	return this.merge(curr, next)
+func (o operator) Merge(curr, next interface{}) interface{} {
+	return o.merge(curr, next)
 }
 
-func (this operator) merge(curr, next interface{}) interface{} {
+func (o operator) merge(curr, next interface{}) interface{} {
 	if curr == nil {
 		return next
 	}
@@ -49,12 +49,12 @@ func (this operator) merge(curr, next interface{}) interface{} {
 		return nil
 	}
 
-	return this.mergeHash(cHash, nHash)
+	return o.mergeHash(cHash, nHash)
 }
 
-func (this operator) mergeHash(curr, next map[string]interface{}) map[string]interface{} {
+func (o operator) mergeHash(curr, next map[string]interface{}) map[string]interface{} {
 	for k := range next {
-		res := this.merge(curr[k], next[k])
+		res := o.merge(curr[k], next[k])
 
 		if res == nil {
 			delete(curr, k)

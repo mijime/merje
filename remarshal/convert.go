@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 )
 
+// ConvertMapsToStringMaps is
 func ConvertMapsToStringMaps(item interface{}) (res interface{}, err error) {
 	return convertMapsToStringMaps(item)
 }
 
+// ConvertNumbersToInt64 is
 func ConvertNumbersToInt64(item interface{}) (res interface{}, err error) {
 	return convertNumbersToInt64(item)
 }

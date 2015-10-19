@@ -9,14 +9,10 @@ import (
 type converter struct{}
 
 func init() {
-	remarshal.Factory.Regist("yaml", New())
+	remarshal.Factory.Regist("yaml", converter{})
 }
 
-func New() converter {
-	return converter{}
-}
-
-func (this converter) Lookup(options interface{}) interface{} {
+func (c converter) Lookup(options interface{}) interface{} {
 	op, ok := options.(remarshal.Options)
 
 	if !ok {
@@ -25,17 +21,17 @@ func (this converter) Lookup(options interface{}) interface{} {
 
 	if filepath.Ext(op.FileName) == ".yaml" ||
 		filepath.Ext(op.FileName) == ".yml" {
-		return this
+		return c
 	}
 
 	if op.Format == "yaml" {
-		return this
+		return c
 	}
 
 	return nil
 }
 
-func (this converter) Unmarshal(buf []byte) (data interface{}, err error) {
+func (c converter) Unmarshal(buf []byte) (data interface{}, err error) {
 	err = yaml.Unmarshal(buf, &data)
 
 	if err != nil {
@@ -45,6 +41,6 @@ func (this converter) Unmarshal(buf []byte) (data interface{}, err error) {
 	return remarshal.ConvertMapsToStringMaps(data)
 }
 
-func (this converter) Marshal(data interface{}) (output []byte, err error) {
+func (c converter) Marshal(data interface{}) (output []byte, err error) {
 	return yaml.Marshal(&data)
 }

@@ -6,10 +6,10 @@ import (
 
 type TestAdapter struct{}
 
-func (this *TestAdapter) Lookup(option interface{}) interface{} {
-	return this
+func (ta *TestAdapter) Lookup(option interface{}) interface{} {
+	return ta
 }
-func (this *TestAdapter) UseFunc() bool {
+func (ta *TestAdapter) UseFunc() bool {
 	return true
 }
 
