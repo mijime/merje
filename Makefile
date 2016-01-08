@@ -4,8 +4,8 @@ VERSION = 0.1.4
 GO_FILES = $(shell find . -name "*.go" -type f)
 GO_TEST_FILES = $(shell find . -name "*_test.go" -type f)
 
-BUILD_DIR = pkg/$(VERSION)
-DIST_DIR = pkg/dist/$(VERSION)
+BUILD_DIR = _obj/$(VERSION)
+DIST_DIR = _obj/dist/$(VERSION)
 DIST_TARS = \
 	$(DIST_DIR)/windows_amd64.tar.gz \
 	$(DIST_DIR)/darwin_amd64.tar.gz \
