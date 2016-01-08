@@ -2,10 +2,11 @@ package conjunction
 
 import (
 	"github.com/mijime/merje/merge"
+	"reflect"
 )
 
 func init() {
-	merge.Factory.Regist("and", operator{})
+	merge.Factory.Regist("conjunction", operator{})
 }
 
 type operator struct{}
@@ -25,10 +26,10 @@ func (o operator) Lookup(options interface{}) interface{} {
 }
 
 func (o operator) Merge(curr, next interface{}) interface{} {
-	return o.merge(curr, next)
+	return o.mergeStruct(curr, next)
 }
 
-func (o operator) merge(curr, next interface{}) interface{} {
+func (o operator) mergeStruct(curr, next interface{}) interface{} {
 	if curr == nil {
 		return next
 	}
@@ -37,31 +38,50 @@ func (o operator) merge(curr, next interface{}) interface{} {
 		return nil
 	}
 
-	cHash, cHashOk := curr.(map[string]interface{})
+	cVal := reflect.ValueOf(curr)
+	nVal := reflect.ValueOf(next)
 
-	if !cHashOk {
-		return next
+	if cVal.Kind() == reflect.Slice && nVal.Kind() == reflect.Slice {
+		return o.mergeSlice(cVal, nVal)
 	}
 
-	nHash, nHashOk := next.(map[string]interface{})
+	if cVal.Kind() == reflect.Map && nVal.Kind() == reflect.Map {
+		cMap, cMapOk := curr.(map[string]interface{})
+		nMap, nMapOk := next.(map[string]interface{})
 
-	if !nHashOk {
-		return next
+		if cMapOk && nMapOk {
+			return o.mergeMap(cMap, nMap)
+		}
 	}
 
-	return o.mergeHash(cHash, nHash)
+	return next
 }
 
-func (o operator) mergeHash(curr, next map[string]interface{}) map[string]interface{} {
+func (o operator) mergeMap(curr, next map[string]interface{}) map[string]interface{} {
 	for k := range curr {
-		res := o.merge(curr[k], next[k])
+		res := o.mergeStruct(curr[k], next[k])
 
 		if res == nil {
 			delete(curr, k)
+
 		} else {
 			curr[k] = res
 		}
 	}
 
 	return curr
+}
+
+func (o operator) mergeSlice(curr, next reflect.Value) []interface{} {
+	res := make([]interface{}, curr.Len()+next.Len())
+
+	for i := 0; i < curr.Len(); i++ {
+		res[i] = curr.Index(i).Interface()
+	}
+
+	for i := 0; i < next.Len(); i++ {
+		res[i+curr.Len()] = next.Index(i).Interface()
+	}
+
+	return res
 }

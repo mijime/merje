@@ -25,10 +25,10 @@ func (o operator) Lookup(options interface{}) interface{} {
 }
 
 func (o operator) Merge(curr, next interface{}) interface{} {
-	return o.merge(curr, next)
+	return o.mergeStruct(curr, next)
 }
 
-func (o operator) merge(curr, next interface{}) interface{} {
+func (o operator) mergeStruct(curr, next interface{}) interface{} {
 	if curr == nil {
 		return next
 	}
@@ -37,24 +37,19 @@ func (o operator) merge(curr, next interface{}) interface{} {
 		return curr
 	}
 
-	cHash, cHashOk := curr.(map[string]interface{})
+	cMap, cMapOk := curr.(map[string]interface{})
+	nMap, nMapOk := next.(map[string]interface{})
 
-	if !cHashOk {
-		return nil
+	if cMapOk && nMapOk {
+		return o.mergeMap(cMap, nMap)
 	}
 
-	nHash, nHashOk := next.(map[string]interface{})
-
-	if !nHashOk {
-		return nil
-	}
-
-	return o.mergeHash(cHash, nHash)
+	return nil
 }
 
-func (o operator) mergeHash(curr, next map[string]interface{}) map[string]interface{} {
+func (o operator) mergeMap(curr, next map[string]interface{}) map[string]interface{} {
 	for k := range next {
-		res := o.merge(curr[k], next[k])
+		res := o.mergeStruct(curr[k], next[k])
 
 		if res == nil {
 			delete(curr, k)
