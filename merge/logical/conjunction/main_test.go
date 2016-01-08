@@ -96,7 +96,7 @@ func TestMain(t *testing.T) {
 	}
 }
 
-func TestNotEqualAll (t *testing.T) {
+func TestNotEqualAll(t *testing.T) {
 	op := operator{}
 
 	v1 := map[string]interface{}{
