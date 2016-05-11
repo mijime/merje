@@ -18,7 +18,7 @@ XC_OS = windows darwin linux
 all: $(GO_FILES)
 
 %.go:
-	golint $*.go
+	$(GOPATH)/bin/golint $*.go
 	gofmt -d -s -w -e $*.go
 
 %_test.go:
@@ -28,7 +28,7 @@ format: $(GO_FILES)
 	gofmt -d -s -w -e $(GO_FILES)
 
 lint: golint
-	golint ./...
+	$(GOPATH)/bin/golint ./...
 
 vet:
 	go tool vet -v .
@@ -41,13 +41,13 @@ install:
 
 release: ghr tarball
 	git push origin $(VERSION)
-	ghr --replace $(VERSION) $(DIST_DIR)
+	$(GOPATH)/bin/ghr --replace $(VERSION) $(DIST_DIR)
 
 tarball: $(DIST_TARS)
 
 $(DIST_DIR)/%.tar.gz:
 	mkdir -p $(DIST_DIR)
-	tar cvfz $@ $(BUILD_DIR)/$(*)
+	tar cvfz $@ -C $(BUILD_DIR)/$(*) .
 
 build: gox format test
 	gox \
