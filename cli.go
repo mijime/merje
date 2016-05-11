@@ -50,8 +50,7 @@ func (cli *CLI) Run(args []string) int {
 	}
 
 	if options.Format == "" && options.Output == "" {
-		fmt.Fprint(cli.errStream, "[Error] Need flags. -f or -o")
-		return ExitCodeError
+		options.Format = "json"
 	}
 
 	if e := cli.execute(options, targets[1:]); e != nil {

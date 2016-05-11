@@ -67,13 +67,13 @@ func TestRun_formatTmpl(t *testing.T) {
 	}
 }
 
-func TestRun_needFlag(t *testing.T) {
+func TestRun_noNeedFlag(t *testing.T) {
 	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
 	cli := &CLI{outStream: outStream, errStream: errStream}
 	args := strings.Split("./merje examples/input-1.json", " ")
 
 	status := cli.Run(args)
-	if status != ExitCodeError {
+	if status != ExitCodeOK {
 		t.Errorf("expected %d to eq %d", status, ExitCodeOK)
 	}
 }
