@@ -27,21 +27,21 @@ all: $(GO_FILES)
 format: $(GO_FILES)
 	gofmt -d -s -w -e $(GO_FILES)
 
-lint: golint
-	$(GOPATH)/bin/golint ./...
+lint: $(GOPATH)/bin/golint
+	golint ./...
 
 vet:
 	go tool vet -v .
 
-test: format lint vet
+test: format vet
 	go test -cover ./...
 
 install:
 	go get -v ./...
 
-release: ghr tarball
+release: $(GOPATH)/bin/ghr tarball
 	git push origin $(VERSION)
-	$(GOPATH)/bin/ghr --replace $(VERSION) $(DIST_DIR)
+	ghr --replace $(VERSION) $(DIST_DIR)
 
 tarball: $(DIST_TARS)
 
@@ -49,7 +49,7 @@ $(DIST_DIR)/%.tar.gz:
 	mkdir -p $(DIST_DIR)
 	tar cvfz $@ -C $(BUILD_DIR)/$(*) .
 
-build: gox format test
+build: $(GOPATH)/bin/gox format test
 	gox \
 		-ldflags="-X main.GitCommit \"$$(git describe --always)\"" \
 		-os="$(XC_OS)" \
@@ -57,11 +57,11 @@ build: gox format test
 		-output="$(BUILD_DIR)/{{.OS}}_{{.Arch}}/{{.Dir}}" \
 		./...
 
-golint:
+$(GOPATH)/bin/golint:
 	go get -v github.com/golang/lint/golint
 
-ghr:
+$(GOPATH)/bin/ghr:
 	go get -v github.com/tcnksm/ghr
 
-gox:
+$(GOPATH)/bin/gox:
 	go get -v github.com/mitchellh/gox
