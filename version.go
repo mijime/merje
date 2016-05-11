@@ -4,4 +4,4 @@ package main
 const Name string = "merje"
 
 // Version is command version
-const Version string = "0.1.3"
+const Version string = "0.1.5"
