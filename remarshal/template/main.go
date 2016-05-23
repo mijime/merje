@@ -2,11 +2,13 @@ package template
 
 import (
 	"bytes"
-	"github.com/mijime/merje/remarshal"
+	"log"
 	"os"
 	"path"
 	"strings"
 	"text/template"
+
+	"github.com/mijime/merje/remarshal"
 )
 
 type factory struct{}
@@ -65,8 +67,27 @@ func buildTemplate(format string) (tmpl *template.Template, err error) {
 		"replace": strings.Replace,
 		"base":    path.Base,
 		"dir":     path.Dir,
+		"partial": renderPartial,
 	}
 
 	name := path.Base(format)
 	return template.New(name).Funcs(funcMap).ParseFiles(format)
+}
+
+func renderPartial(path string, data interface{}) string {
+	var buf bytes.Buffer
+
+	tmpl, errBuild := buildTemplate(path)
+
+	if errBuild != nil {
+		log.Fatal(errBuild)
+	}
+
+	errRender := tmpl.Execute(&buf, data)
+
+	if errRender != nil {
+		log.Fatal(errRender)
+	}
+
+	return buf.String()
 }
