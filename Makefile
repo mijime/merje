@@ -1,5 +1,5 @@
 VERSION = dev
-NAME = $(shell pwd | xargs basename)
+REPO = $(shell pwd | xargs basename)
 
 SRC_FILES = $(shell find . -name "*.go" -type f)
 RELEASE_DIR = _obj/$(VERSION)
@@ -15,7 +15,7 @@ TARGET = \
 all: $(TARGET)
 
 ghr: all
-	ghr --replace $(VERSION) _obj/$(VERSION)
+	ghr --replace $(VERSION) -u $(USER) -r $(REPO) _obj/$(VERSION)
 
 test: $(SRC_FILES)
 	go fmt ./...
@@ -31,10 +31,10 @@ release-%-amd64:
 release-%-386:
 		@$(MAKE) release GOOS=$* GOARCH=386
 
-release: $(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH).tar.gz
+release: $(RELEASE_DIR)/$(REPO)_$(GOOS)_$(GOARCH).tar.gz
 
-$(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH).tar.gz: $(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH)/$(NAME)$(SUFFIX)
-	tar cfz $@ -C $(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH) $(NAME)$(SUFFIX)
+$(RELEASE_DIR)/$(REPO)_$(GOOS)_$(GOARCH).tar.gz: $(RELEASE_DIR)/$(REPO)_$(GOOS)_$(GOARCH)/$(REPO)$(SUFFIX)
+	tar cfz $@ -C $(RELEASE_DIR)/$(REPO)_$(GOOS)_$(GOARCH) $(REPO)$(SUFFIX)
 
 build-windows-%: $(SRC_FILES)
 		@$(MAKE) build GOOS=windows GOARCH=$* SUFFIX=.exe
@@ -45,7 +45,7 @@ build-%-amd64: $(SRC_FILES)
 build-%-386: $(SRC_FILES)
 		@$(MAKE) build GOOS=$* GOARCH=386
 
-build: $(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH)/$(NAME)$(SUFFIX)
+build: $(RELEASE_DIR)/$(REPO)_$(GOOS)_$(GOARCH)/$(REPO)$(SUFFIX)
 
-$(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH)/$(NAME)$(SUFFIX):
+$(RELEASE_DIR)/$(REPO)_$(GOOS)_$(GOARCH)/$(REPO)$(SUFFIX):
 	go build -ldflags "-X main.Version=$(VERSION)" -o $@
