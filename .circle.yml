@@ -1,0 +1,8 @@
+---
+deployment:
+  release:
+    tag: /^[0-9]+(\.[0-9]+)*/
+    commands:
+      - make
+      - go install github.com/tcnksm/ghr
+      - make ghr
