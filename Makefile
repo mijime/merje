@@ -1,67 +1,51 @@
-NAME = merje
 VERSION = 0.1.6
+NAME = $(shell pwd | xargs basename)
 
-GO_FILES = $(shell find . -name "*.go" -type f)
-GO_TEST_FILES = $(shell find . -name "*_test.go" -type f)
+SRC_FILES = $(shell find . -name "*.go" -type f)
+RELEASE_DIR = _obj/$(VERSION)
 
-BUILD_DIR = _obj/$(VERSION)
-DIST_DIR = _obj/dist/$(VERSION)
-DIST_TARS = \
-	$(DIST_DIR)/windows_amd64.tar.gz \
-	$(DIST_DIR)/darwin_amd64.tar.gz \
-	$(DIST_DIR)/linux_amd64.tar.gz
+TARGET = \
+				 release-windows-amd64 \
+				 release-linux-amd64 \
+				 release-darwin-amd64 \
+				 release-windows-386 \
+				 release-linux-386 \
+				 release-darwin-386
 
-# XC_ARCH = 386 amd64
-XC_ARCH = amd64
-XC_OS = windows darwin linux
+all: $(TARGET)
 
-all: $(GO_FILES)
+ghr: all
+	ghr --replace $(VERSION) _obj/$(VERSION)
 
-%.go:
-	$(GOPATH)/bin/golint $*.go
-	gofmt -d -s -w -e $*.go
+test: $(SRC_FILES)
+	go fmt ./...
+	go vet ./...
+	go test -v -race -cover ./...
 
-%_test.go:
-	go test -v ./$(*D)
+release-windows-%:
+		@$(MAKE) release GOOS=windows GOARCH=$* SUFFIX=.exe
 
-format: $(GO_FILES)
-	gofmt -d -s -w -e $(GO_FILES)
+release-%-amd64:
+		@$(MAKE) release GOOS=$* GOARCH=amd64
 
-lint: $(GOPATH)/bin/golint
-	golint ./...
+release-%-386:
+		@$(MAKE) release GOOS=$* GOARCH=386
 
-vet:
-	go tool vet -v .
+release: $(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH).tar.gz
 
-test: format vet
-	go test -cover ./...
+$(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH).tar.gz: $(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH)/$(NAME)$(SUFFIX)
+	tar cfz $@ -C $(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH) $(NAME)$(SUFFIX)
 
-install:
-	go get -v ./...
+build-windows-%: $(SRC_FILES)
+		@$(MAKE) build GOOS=windows GOARCH=$* SUFFIX=.exe
 
-release: $(GOPATH)/bin/ghr tarball
-	git push origin $(VERSION)
-	ghr --replace $(VERSION) $(DIST_DIR)
+build-%-amd64: $(SRC_FILES)
+		@$(MAKE) build GOOS=$* GOARCH=amd64
 
-tarball: $(DIST_TARS)
+build-%-386: $(SRC_FILES)
+		@$(MAKE) build GOOS=$* GOARCH=386
 
-$(DIST_DIR)/%.tar.gz:
-	mkdir -p $(DIST_DIR)
-	tar cvfz $@ -C $(BUILD_DIR)/$(*) .
+build: $(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH)/$(NAME)$(SUFFIX)
 
-build: $(GOPATH)/bin/gox format test
-	gox \
-		-ldflags="-X main.GitCommit \"$$(git describe --always)\"" \
-		-os="$(XC_OS)" \
-		-arch="$(XC_ARCH)" \
-		-output="$(BUILD_DIR)/{{.OS}}_{{.Arch}}/{{.Dir}}" \
-		./...
-
-$(GOPATH)/bin/golint:
-	go get -v github.com/golang/lint/golint
-
-$(GOPATH)/bin/ghr:
-	go get -v github.com/tcnksm/ghr
-
-$(GOPATH)/bin/gox:
-	go get -v github.com/mitchellh/gox
+$(RELEASE_DIR)/$(NAME)_$(GOOS)_$(GOARCH)/$(NAME)$(SUFFIX):
+	go build -ldflags "-X main.Version=$(VERSION)" -o $@
