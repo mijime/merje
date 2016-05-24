@@ -2,7 +2,7 @@
 
 Supports the merge hash from any config files.
 
-[![Build Status](https://drone.io/github.com/mijime/merje/status.png)](https://drone.io/github.com/mijime/merje/latest)
+[![CircleCI](https://circleci.com/gh/mijime/merje.svg?style=svg)](https://circleci.com/gh/mijime/merje)
 
 ## Description
 
