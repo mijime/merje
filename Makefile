@@ -1,4 +1,4 @@
-VERSION = 0.1.6
+VERSION = dev
 NAME = $(shell pwd | xargs basename)
 
 SRC_FILES = $(shell find . -name "*.go" -type f)
