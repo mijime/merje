@@ -15,7 +15,7 @@ TARGET = \
 all: $(TARGET)
 
 ghr: all
-	ghr --replace $(VERSION) -u $(USER) -r $(REPO) _obj/$(VERSION)
+	ghr --username $(USER) --repository $(REPO) --replace $(VERSION) _obj/$(VERSION)
 
 test: $(SRC_FILES)
 	go fmt ./...
