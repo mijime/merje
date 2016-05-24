@@ -1,4 +1,4 @@
-### https://raw.github.com/github/gitignore/be3333655bffe9507d66cc864aee95ed6052b4ed/go.gitignore
+### https://raw.github.com/github/gitignore/8f35779cefbabdca21cfc4cda55abb1290d59fd9/Go.gitignore
 
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
@@ -24,3 +24,5 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+vendor/
