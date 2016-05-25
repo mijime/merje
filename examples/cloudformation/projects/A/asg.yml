@@ -1,0 +1,51 @@
+---
+Resources:
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      DesiredCapacity:
+        Ref: DesiredCapacity
+      LaunchConfigurationName:
+        Ref: LaunchConfiguration
+      MinSize: 0
+      MaxSize: 3
+      Tags:
+      - Key: Name
+        PropagateAtLaunch: true
+        Value:
+          Ref: LaunchConfiguration
+      VPCZoneIdentifier:
+      - Ref: PublicPrimarySubnet
+      - Ref: PublicSecondarySubnet
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        PauseTime: PT10M
+        WaitOnResourceSignals: true
+      AutoScalingScheduledAction:
+        IgnoreUnmodifiedGroupSizeProperties : true
+
+  DownScalingPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AdjustmentType: ChangeInCapacity
+      AutoScalingGroupName:
+        Ref: AutoScalingGroup
+      ScalingAdjustment: -1
+
+  UpScalingPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AdjustmentType: ChangeInCapacity
+      AutoScalingGroupName:
+        Ref: AutoScalingGroup
+      ScalingAdjustment: 1
+
+  ClusterDownAlarm:
+    Properties:
+      AlarmActions:
+      - Ref: DownScalingPolicy
+
+  ClusterUpAlarm:
+    Properties:
+      AlarmActions:
+      - Ref: UpScalingPolicy

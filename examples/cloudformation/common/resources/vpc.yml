@@ -1,0 +1,87 @@
+---
+Outputs:
+  VpcId:
+    Value:
+      Ref: Vpc
+
+  PublicSubnetIds:
+    Value:
+      Fn::Join:
+      - ","
+      - - Ref: PublicPrimarySubnet
+        - Ref: PublicSecondarySubnet
+
+Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 192.168.0.0/16
+      EnableDnsHostnames: true
+
+  PublicPrimarySubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 192.168.1.0/24
+      MapPublicIpOnLaunch: true
+      VpcId:
+        Ref: Vpc
+      AvailabilityZone:
+        Fn::Select:
+        - 0
+        - Fn::GetAZs:
+            Ref: AWS::Region
+
+  PublicPrimarySubnetRouteTableAssosciation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: PublicSecondarySubnet
+      RouteTableId:
+        Ref: MainRouteTable
+
+  PublicSecondarySubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 192.168.2.0/24
+      MapPublicIpOnLaunch: true
+      VpcId:
+        Ref: Vpc
+      AvailabilityZone:
+        Fn::Select:
+        - 1
+        - Fn::GetAZs:
+            Ref: AWS::Region
+
+  PublicSecondarySubnetRouteTableAssosciation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: PublicPrimarySubnet
+      RouteTableId:
+        Ref: MainRouteTable
+
+  MainRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: Vpc
+
+  MainRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: InternetGateway
+      RouteTableId:
+        Ref: MainRouteTable
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: Vpc
+      InternetGatewayId:
+        Ref: InternetGateway

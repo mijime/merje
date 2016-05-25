@@ -1,9 +1,4 @@
 ---
-Parameters:
-  DesiredCount:
-    Type: Number
-    Default: 1
-
 Resources:
   Service:
     Type: AWS::ECS::Service
@@ -20,14 +15,14 @@ Resources:
       ContainerDefinitions:{{range $k,$v:= .}}
       - Name: {{$k}}
         Image: {{$v.image}}
-        Cpu: {{$v.cpu}}
-        Memory: {{$v.memory}}
+        {{if $v.cpu_shares}}Cpu: {{$v.cpu_shares}}{{end}}
+        Memory: {{if $v.mem_limit}}{{$m := split $v.mem_limit "m"}}{{index $m 0}}{{else}}256{{end}}
         {{if $v.environment}}Environment:{{range $ek,$ev := $v.environment}}
         - Name: {{$ek}}
           Value: {{$ev}}{{end}}
         {{end}}{{if $v.ports}}PortMappings:{{range $v.ports}}{{$pl := split . ":"}}
-        - ContainerPort: {{index $pl 0}}
-          HostPort: {{index $pl 1}}{{end}}
+        - ContainerPort: {{index $pl 1}}
+          HostPort: {{index $pl 0}}{{end}}
         {{end}}{{if $v.links}}Links:{{range $v.links}}
         - {{.}}{{end}}
         {{end}}{{if $v.volumes}}MountPoints:{{range $v.volumes}}{{$vl := split . ":"}}

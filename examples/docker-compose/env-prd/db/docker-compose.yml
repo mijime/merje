@@ -1,0 +1,7 @@
+---
+services:
+  wordpress:
+    environment:
+      WORDPRESS_DB_HOST: mysql.example.org
+      WORDPRESS_DB_USER: admin
+      WORDPRESS_DB_PASSWORD: sHx@RxmKyvTV

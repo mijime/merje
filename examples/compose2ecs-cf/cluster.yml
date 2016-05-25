@@ -1,5 +1,8 @@
 ---
-Resources:
+Parameters:
   Cluster:
-    Type: AWS::ECS::Cluster
+    Type: String
+  DesiredCount:
+    Type: Number
+    Default: 1
 

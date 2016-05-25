@@ -1,0 +1,51 @@
+---
+Resources:
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: CoreOS SecurityGroup
+      VpcId:
+        Ref: Vpc
+
+  SshIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      GroupId:
+        Fn::GetAtt:
+        - SecurityGroup
+        - GroupId
+      CidrIp:
+        Ref: AllowSSHFrom
+      FromPort: "22"
+      ToPort: "22"
+
+  EtcdIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      GroupId:
+        Fn::GetAtt:
+        - SecurityGroup
+        - GroupId
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+        - SecurityGroup
+        - GroupId
+      FromPort: "2379"
+      ToPort: "2379"
+
+  EtcdPeerIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      GroupId:
+        Fn::GetAtt:
+        - SecurityGroup
+        - GroupId
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+        - SecurityGroup
+        - GroupId
+      FromPort: "2380"
+      ToPort: "2380"

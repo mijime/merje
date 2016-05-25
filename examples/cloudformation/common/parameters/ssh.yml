@@ -1,0 +1,9 @@
+---
+Parameters:
+  AllowSSHFrom:
+    Type: String
+    Default: 0.0.0.0/0
+
+  KeyPair:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: default

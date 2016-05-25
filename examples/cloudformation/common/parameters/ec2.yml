@@ -1,0 +1,5 @@
+---
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t2.micro

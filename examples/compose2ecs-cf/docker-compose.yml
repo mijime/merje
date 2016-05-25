@@ -1,13 +1,15 @@
-web:
+wordpress:
   image: wordpress
   ports:
-  - 80:80
+  - 8080:80
+  mem_limit: 256m
   links:
-  - database:mysql
+  - mysql
   environment:
-    WORDPRESS_DB_PASSWORD: ex4mP1e
+    WORDPRESS_DB_PASSWORD: ch4ngeIt0
 
-database:
-  image: percona
+mysql:
+  image: mysql
+  mem_limit: 512m
   environment:
-    MYSQL_ROOT_PASSWORD: ex4mP1e
+    MYSQL_ROOT_PASSWORD: ch4ngeIt0

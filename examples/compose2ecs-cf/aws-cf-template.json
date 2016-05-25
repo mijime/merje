@@ -1,14 +1,14 @@
 {
   "Parameters": {
+    "Cluster": {
+      "Type": "String"
+    },
     "DesiredCount": {
       "Default": 1,
       "Type": "Number"
     }
   },
   "Resources": {
-    "Cluster": {
-      "Type": "AWS::ECS::Cluster"
-    },
     "Service": {
       "Properties": {
         "Cluster": {
@@ -27,35 +27,33 @@
       "Properties": {
         "ContainerDefinitions": [
           {
-            "Cpu": "\u003cno value\u003e",
             "Environment": [
               {
                 "Name": "MYSQL_ROOT_PASSWORD",
-                "Value": "ex4mP1e"
+                "Value": "ch4ngeIt0"
               }
             ],
-            "Image": "percona",
-            "Memory": "\u003cno value\u003e",
-            "Name": "database"
+            "Image": "mysql",
+            "Memory": 512,
+            "Name": "mysql"
           },
           {
-            "Cpu": "\u003cno value\u003e",
             "Environment": [
               {
                 "Name": "WORDPRESS_DB_PASSWORD",
-                "Value": "ex4mP1e"
+                "Value": "ch4ngeIt0"
               }
             ],
             "Image": "wordpress",
             "Links": [
-              "database:mysql"
+              "mysql"
             ],
-            "Memory": "\u003cno value\u003e",
-            "Name": "web",
+            "Memory": 256,
+            "Name": "wordpress",
             "PortMappings": [
               {
                 "ContainerPort": 80,
-                "HostPort": 80
+                "HostPort": 8080
               }
             ]
           }

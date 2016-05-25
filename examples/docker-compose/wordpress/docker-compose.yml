@@ -1,0 +1,6 @@
+---
+services:
+  wordpress:
+    image: wordpress
+    environment:
+      WORDPRESS_DB_NAME: wordpress

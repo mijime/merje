@@ -1,0 +1,21 @@
+---
+Resources:
+  Vpc:
+    Properties:
+      CidrBlock: 172.99.0.0/16
+
+  PrivatePrimarySubnet:
+    Properties:
+      CidrBlock: 172.99.1.0/24
+
+  PrivateSecondarySubnet:
+    Properties:
+      CidrBlock: 172.99.2.0/24
+
+  PublicPrimarySubnet:
+    Properties:
+      CidrBlock: 172.99.3.0/24
+
+  PublicSecondarySubnet:
+    Properties:
+      CidrBlock: 172.99.4.0/24

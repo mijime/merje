@@ -1,0 +1,39 @@
+---
+Outputs:
+  Cluster:
+    Value:
+      Ref: Cluster
+
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+
+  ClusterUpAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      Namespace: AWS/ECS
+      MetricName: MemoryReservation
+      Dimensions:
+        - Name: ClusterName
+          Value:
+            Ref: Cluster
+      Threshold: 95
+      Statistic: Maximum
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Period: 300
+      EvaluationPeriods: 1
+
+  ClusterDownAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      Namespace: AWS/ECS
+      MetricName: MemoryReservation
+      Dimensions:
+        - Name: ClusterName
+          Value:
+            Ref: Cluster
+      Threshold: 0
+      Statistic: Maximum
+      ComparisonOperator: LessThanOrEqualToThreshold
+      Period: 300
+      EvaluationPeriods: 1

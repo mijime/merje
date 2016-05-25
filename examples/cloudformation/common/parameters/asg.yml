@@ -1,0 +1,7 @@
+---
+Parameters:
+  DesiredCapacity:
+    Type: Number
+    Default: 0
+    MinValue: 0
+    MaxValue: 3

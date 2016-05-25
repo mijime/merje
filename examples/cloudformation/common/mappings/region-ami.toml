@@ -1,0 +1,6 @@
+[Mappings]
+  [Mappings.RegionMap]
+    [Mappings.RegionMap.ap-northeast-1]
+      AMI = "ami-b4fce6da"
+    [Mappings.RegionMap.eu-central-1]
+      AMI = "ami-021ffd6d"

@@ -1,0 +1,17 @@
+services:
+  proxy:
+    image: jwilder/nginx-proxy
+    ports:
+    - 80:80
+    - 443:443
+    restart: on-failure
+    volumes:
+    - //var/run/docker.sock://tmp/docker.sock:ro
+  wordpress:
+    environment:
+      WORDPRESS_DB_HOST: mysql.example.org
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_PASSWORD: sHx@RxmKyvTV
+      WORDPRESS_DB_USER: admin
+    image: wordpress
+version: "2.0"
