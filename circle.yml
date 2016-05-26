@@ -1,6 +1,6 @@
 ---
 dependencies:
-  override:
+  pre:
     - which ghr || go get -v github.com/tcnksm/ghr
 
 deployment:
