@@ -1,0 +1,12 @@
+---
+run:
+
+linters:
+  disable:
+    - gochecknoglobals
+    - gomnd
+    - scopelint
+
+linters-settings:
+  gocyclo:
+    min-complexity: 15

@@ -1,5 +1,0 @@
-package: github.com/mijime/merje
-import:
-- package: github.com/BurntSushi/toml
-- package: github.com/jessevdk/go-flags
-- package: gopkg.in/yaml.v2
