@@ -2,25 +2,22 @@
 
 Supports the merge hash from any config files.
 
-[![CircleCI](https://circleci.com/gh/mijime/merje.svg?style=svg)](https://circleci.com/gh/mijime/merje)
-
 ## Description
 
 ## Usage
 
 ```
-merje [OPTIONS] [SOURCE FILES ...]
+Usage of merje:
+  -decode string
+        json/yaml/toml
+  -encode string
+        json/yaml/toml/template
+  -merge string
+        or/and/xor (default "or")
+  -out string
 
-Application Options:
-  -i, --input-format:  input format
-  -f, --format:        output format
-  -o, --out:           output path
-  -t, --type:          merge type (default: or)
-  -v, --version        print a version
-
-Help Options:
-  -?                  Show this help message
-  -h, --help          Show this help message
+  -version
+        dev
 ```
 
 ## Example
@@ -28,7 +25,7 @@ Help Options:
 Merge from [examples/input-1.json](examples/input-1.json) [examples/input-2.yml](examples/input-2.yml) to [examples/input-3.toml](examples/input-3.toml)
 
 ```bash
-$ merje examples/input-1.json examples/input-2.yml --out examples/input-3.toml
+$ merje --out examples/input-3.toml examples/input-1.json examples/input-2.yml
 ```
 
 ## Install
