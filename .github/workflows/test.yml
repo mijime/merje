@@ -21,4 +21,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - run: go mod vendor
+      - uses: reviewdog/action-golangci-lint@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          golangci_lint_flags: "--enable-all"
       - run: go test -race -cover ./...
