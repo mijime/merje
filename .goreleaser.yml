@@ -6,7 +6,11 @@ before:
     - go mod vendor
 
 builds:
-  - env:
+  - goos:
+      - linux
+      - darwin
+      - windows
+    env:
       - CGO_ENABLED=0
       - GOFLAGS=-mod=vendor
     main: ./cmd/merje

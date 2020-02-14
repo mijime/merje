@@ -20,6 +20,7 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+      - run: git fetch --prune --tags
       - uses: goreleaser/goreleaser-action@v1
         with:
           version: latest
