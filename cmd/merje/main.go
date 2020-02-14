@@ -64,17 +64,17 @@ func aggregateFiles(agg aggregate.Aggregator, fileChan chan *os.File) interface{
 	return curr
 }
 
-var (
-	decFormat   string
-	encFormat   string
-	mergeType   string
-	output      string
-	showVersion bool
-
-	version = "dev"
-)
+var version = "dev"
 
 func main() {
+	var (
+		decFormat   string
+		encFormat   string
+		mergeType   string
+		output      string
+		showVersion bool
+	)
+
 	flag.StringVar(&decFormat, "decode", "", "json/yaml/toml")
 	flag.StringVar(&encFormat, "encode", "", "json/yaml/toml/template")
 	flag.StringVar(&mergeType, "merge", "or", "or/and/xor")
