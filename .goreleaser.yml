@@ -32,6 +32,7 @@ snapshot:
   name_template: "{{ .Tag }}-next"
 
 changelog:
+  sort: asc
   filters:
     exclude:
       - "^Merge pull request"
