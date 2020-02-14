@@ -1,11 +1,6 @@
 ---
 run:
-
-linters:
-  disable:
-    - gochecknoglobals
-    - gomnd
-    - scopelint
+  tests: no
 
 linters-settings:
   gocyclo:
