@@ -1,6 +1,6 @@
-aws-cf-template.json: cluster.yml docker-compose.yml compose2ecs-cf.tmpl
-	merje docker-compose.yml --format compose2ecs-cf.tmpl | \
-		merje cluster.yml - -iyaml -o aws-cf-template.json
+aws-cf-template.json: compose2ecs-cf.tmpl docker-compose.yml cluster.yml
+	merje -encode compose2ecs-cf.tmpl docker-compose.yml | \
+		merje -decode yaml - cluster.yml | jq . > $@
 
 test: docker-compose.yml
 	docker-compose up -d
